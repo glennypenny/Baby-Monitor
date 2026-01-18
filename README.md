@@ -20,18 +20,6 @@ Open your browser and navigate to: http://<your-pi-ip-address>:5000
 *Stop the monitor* (cleanup for next use):
   ./stop_monitor.sh
 
-### Project Structure
-.
-├── flask_app.py              # Main working application (use this)
-├── start_monitor.sh          # Launch script with system reset
-├── stop_monitor.sh           # Cleanup script
-├── camera.py                 # Camera module (future)
-├── audio_stream.py           # Audio streaming (future)
-├── camera_stream.py          # Camera streaming (future)
-├── motion_detector.py        # Motion detection (future)
-├── logs/                     # Log files
-└── .idea/                    # IDE configuration
-
 ### Setup
 Prerequisites
 Raspberry Pi with camera module
@@ -74,4 +62,5 @@ This is a learning project. The code is intentionally kept simple as I learn and
 # References & Inspiration
 Picamera2 Library: raspberrypi/picamera2
 YouTube Tutorial: "Raspberry Pi Security Camera/Monitor"
+
 
