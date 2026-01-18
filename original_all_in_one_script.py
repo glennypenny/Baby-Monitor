@@ -197,7 +197,7 @@ HTML_PAGE = """
     <audio id="audio-stream" controls>
         <source src="/audio" type="audio/x-wav">
     </audio>
-    <p><small>Volume: <input type="range" id="volume" min="0" max="1" step="0.1" value="0.5" 
+    <p><small>Volume: <input type="range" id="volume" min="0" max="10" step="0.1" value="0.5" 
            onchange="document.getElementById('audio-stream').volume = this.value;"></small></p>
     <p id="audio-help" style="font-size: 12px; color: #95a5a6;">
         <span id="desktop-hint">Click play to start audio</span>

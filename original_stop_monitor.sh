@@ -1,40 +1,34 @@
 #!/bin/bash
-# SAFE_stop_monitor.sh - Won't break your terminal
+# start_monitor.sh - Starts baby monitor with cleanup
 
 echo "========================================"
-echo "🛑 SAFELY Stopping Baby Monitor"
+echo "👶 Baby Monitor System $(date)"
 echo "========================================"
 
-# Only kill our specific processes, not everything
-echo "Looking for baby monitor processes..."
+# Wait for network to be fully up
+sleep 5
 
-# Method 1: Kill by PID file
-if [ -f /tmp/baby_monitor.pid ]; then
-    PID=$(cat /tmp/baby_monitor.pid)
-    echo "Found PID: $PID"
-    if ps -p $PID > /dev/null; then
-        echo "Stopping process $PID gently..."
-        kill $PID
-        sleep 2
-    fi
-    rm -f /tmp/baby_monitor.pid
-fi
+# Kill existing processes
+echo "🧹 Cleaning existing processes..."
+pkill -f flask_app.py 2>/dev/null
+pkill -f python3.*camera 2>/dev/null
+sleep 2
 
-# Method 2: Kill by script name (more specific)
-echo "Stopping flask_app.py processes..."
-pkill -f "flask_app.py" 2>/dev/null
-
-# Method 3: Kill camera processes (carefully)
-echo "Stopping camera processes..."
-sudo pkill -f "libcamera" 2>/dev/null || true
-sudo pkill -f "picamera" 2>/dev/null || true
-
-# Method 4: Reset GPIO
-echo "Resetting GPIO..."
+# Reset GPIO
+echo "🔄 Resetting GPIO..."
 if command -v gpio &> /dev/null; then
-    gpio unexportall 2>/dev/null || true
+    gpio unexportall
 fi
 
+# Start the Flask app
+echo "🚀 Starting Flask baby monitor..."
+cd /home/glen || exit 1
+
+# Get IP address
+IP_ADDRESS=$(hostname -I | awk '{print $1}')
+echo "   IP: http://${IP_ADDRESS}:8080"
+echo "   Logs: sudo journalctl -u baby-monitor -f"
 echo ""
-echo "✅ Done! Terminal is safe."
-echo "========================================"
+
+# Run in foreground (systemd will handle background)
+exec python3 flask_app.py
