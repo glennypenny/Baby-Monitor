@@ -1,60 +1,81 @@
+Raspberry Pi Baby Monitor
+A simple Raspberry Pi baby monitor that streams video over your local network using Flask. Features motion detection, audio monitoring, and a web interface for remote viewing.
 
-# Raspberry Pi Baby Monitor – HLS & MJPEG Streaming
+What Actually Works
+Right now, only flask_app.py is fully functional on the Pi (it contains all the web app features). The other scripts are for future development and organization.
 
-A simple Raspberry Pi camera streaming setup I’m building as a **LAN baby monitor**.  
-The repo currently contains two approaches:
-- **MJPEG over HTTP** via `image_uploader.py
-- **HLS** HTTP Live Streaming via `video_uploader.py
+Quick Start
+Run the monitor (cleans up system first):
+./start_monitor.sh
+This script:
+Resets GPIO pins
+Clears previous sessions
+Launches flask_app.py
 
-## Why two scripts?
+Access the web interface:
+Open your browser and go to:
 
-I initially tried short **video uploads** to the LAN (HLS segments) but wanted **constant streaming** with minimal delay, so I created the MJPEG approach to push images continuously and delete them from memory, providing a fairly solid “video-like” stream for my baby monitor. In MJPEG, the server sends a sequence of JPEGs in a multipart response; most browsers can display this as motion.
+text
+http://<your-pi-ip-address>:5000
+Stop the monitor:
 
-## Setup Issues
-I first tried Raspberry Pi OS Lite over SSH, but I couldn’t get the camera stack working reliably with sudo apt alone. Switching to the Desktop image solved it because the video/camera software was already present. I still configure everything via SSH, but Desktop made initial camera enablement much easier. I’ll keep iterating on headless/Lite instructions as I refine the install steps.
+bash
+./stop_monitor.sh
+Cleans up the system for next use.
 
-## Inspirations & References
+Why Two Streaming Methods?
+The project explores two approaches:
 
-- I took inspiration from the **Picamera2** project (great API and examples):  
-  `picamera2.py` – https://github.com/raspberrypi/picamera2/blob/main/picamera2/picamera2.py
+HLS (HTTP Live Streaming): Short video segments, good for reliability
+MJPEG: Continuous JPEG stream, lower latency for real-time monitoring (this is the better of the two!)
 
-- This YouTube video motivated the baby monitor idea:  
-  **“Raspberry Pi Security Camera/Monitor”** – https://www.youtube.com/watch?v=OaexSiNUwuE
+Prerequisites
+Raspberry Pi with camera module, motion detector and microphone enabled
 
-> Note: My code is intentionally simple for learning; I’ll be adding more features, improving performance, and cleaning things up as I go.
+Raspberry Pi OS (Desktop recommended for easier camera setup)
 
-## Current Features
-
-- **HLS**: Rolling playlist and short segments for resilient streaming; old segments are deleted automatically.
-- **MJPEG**: Continuous frames served from Flask, with optional frame-rate cap to reduce CPU/bandwidth.
-- **Camera controls**: Brief AE/AWB stabilization and then lock exposure/white balance for consistent image.
-
-## Getting Started
-
-### Prerequisites
-- Raspberry Pi with camera module, configured with **Pi Camera Module**.
-- Python environment with: `picamera2`, `Pillow`, `Flask`.  
-- For HLS viewing, any HTTP server (e.g., `python -m http.server`) or nginx.
-
-I connected to my Pi via SSH, however you may wish to do it using the GUI. Once you're in the Pi:
-
-# Base update
+Installation
+bash
+# Update system
 sudo apt update && sudo apt -y full-upgrade
 
-# Camera stack + Picamera2
-sudo apt install -y libcamera-apps python3-picamera
-# If using Raspberry Pi OS Desktop, Picamera2 may already be installed.
-
-# Python bits your scripts need
-sudo apt install -y python3-flask python3-pil ffmpeg
+# Install dependencies
+sudo apt install -y libcamera-apps python3-picamera2 python3-flask python3-pil ffmpeg
 
 # Enable camera
 sudo raspi-config
-# Interface Options → Camera → Enable
+# Navigate to: Interface Options → Camera → Enable
 sudo reboot
+File Structure
+flask_app.py - Main working application (use this)
 
+start_monitor.sh - Launch script (resets system, then runs Flask app)
 
-### Run MJPEG (Flask)
-```bash
-python3 image_uploader.py
-# Then open http://<pi-ip>:8080/ in your browser
+stop_monitor.sh - Cleanup script
+
+Other files (camera.py, audio_stream.py, etc.) - For future modular development
+
+Notes
+I'm currently refactoring the code into separate modules for better organization
+
+The motion sensor requires a fresh start each time (hence the start/stop scripts)
+
+All development is done via SSH on Raspberry Pi OS Desktop
+
+Troubleshooting
+If the web interface doesn't show video:
+
+Stop the monitor: ./stop_monitor.sh
+
+Start fresh: ./start_monitor.sh
+
+Check camera is enabled in raspi-config
+
+Future Plans
+Split monolithic script into separate modules
+
+Add automated startup on boot
+
+Improve motion detection reliability
+
+Add mobile notifications
