@@ -2,8 +2,6 @@
 
 A simple Raspberry Pi baby monitor that streams video over your local network using Flask. Features motion detection, audio monitoring, and a web interface for remote viewing.
 
-## Quick Start
-
 ### What Actually Works
 Right now, **only `flask_app.py`** is fully functional on the Pi (it contains all the web app features). The other scripts are for future development and organization.
 
@@ -76,3 +74,4 @@ This is a learning project. The code is intentionally kept simple as I learn and
 # References & Inspiration
 Picamera2 Library: raspberrypi/picamera2
 YouTube Tutorial: "Raspberry Pi Security Camera/Monitor"
+
